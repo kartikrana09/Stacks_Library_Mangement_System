@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Transactions — Stacks{% endblock %}
+{% block content %}
+
+<h1>Transactions</h1>
+
+<div class="section-title"><h2>Currently issued</h2><span>{{ issued|length }}</span></div>
+{% if issued %}
+<div class="table-wrap">
+<table class="data-table">
+  <thead><tr><th>Title</th><th>Student</th><th>Issued</th><th>Due</th><th></th></tr></thead>
+  <tbody>
+    {% for t in issued %}
+    <tr>
+      <td>{{ t.book.title }}</td>
+      <td>{{ t.student.name }} ({{ t.student.roll_no }})</td>
+      <td>{{ t.issue_date.strftime('%d %b %Y') }}</td>
+      <td class="{{ 'due-tag overdue' if t.due_date < today else '' }}">{{ t.due_date.strftime('%d %b %Y') }}{{ ' — overdue' if t.due_date < today else '' }}</td>
+      <td>
+        <form class="inline-form" method="post" action="{{ url_for('admin_return', transaction_id=t.id) }}">
+          <button class="tiny-btn" type="submit">Mark returned</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+{% else %}
+<div class="empty-mini">Nothing currently issued.</div>
+{% endif %}
+
+<div class="section-title"><h2>Recently returned</h2><span>{{ returned|length }}</span></div>
+{% if returned %}
+<div class="table-wrap">
+<table class="data-table">
+  <thead><tr><th>Title</th><th>Student</th><th>Returned</th><th>Fine</th></tr></thead>
+  <tbody>
+    {% for t in returned %}
+    <tr>
+      <td>{{ t.book.title }}</td>
+      <td>{{ t.student.name }} ({{ t.student.roll_no }})</td>
+      <td>{{ t.return_date.strftime('%d %b %Y') }}</td>
+      <td>{{ 'Rs ' + t.fine|string if t.fine else 'None' }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+{% else %}
+<div class="empty-mini">No returns yet.</div>
+{% endif %}
+
+{% endblock %}

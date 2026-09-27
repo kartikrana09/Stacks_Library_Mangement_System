@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}My shelf — Stacks{% endblock %}
+{% block content %}
+
+<section class="hero">
+  <span class="hero-eyebrow">My Shelf</span>
+  <h1>{{ current_student.name }}</h1>
+  <p>Roll no. {{ current_student.roll_no }}</p>
+</section>
+
+<div class="section-title"><h2>Currently issued</h2><span>{{ issued|length }} book{{ 's' if issued|length != 1 else '' }}</span></div>
+{% if issued %}
+<div class="ledger">
+  <div class="ledger-row head"><span>Title</span><span>Issued</span><span>Due</span><span>Status</span></div>
+  {% for t in issued %}
+  <div class="ledger-row">
+    <span><a href="{{ url_for('book_detail', book_id=t.book_id) }}">{{ t.book.title }}</a></span>
+    <span class="due-tag ok">{{ t.issue_date.strftime('%d %b %Y') }}</span>
+    <span class="due-tag {{ 'overdue' if t.due_date < today else 'ok' }}">{{ t.due_date.strftime('%d %b %Y') }}</span>
+    <span class="due-tag {{ 'overdue' if t.due_date < today else 'ok' }}">{{ 'Overdue' if t.due_date < today else 'On time' }}</span>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-mini">Nothing checked out right now.</div>
+{% endif %}
+
+<div class="section-title"><h2>Reservations</h2><span>{{ reservations|length }} waiting</span></div>
+{% if reservations %}
+<div class="ledger">
+  <div class="ledger-row head"><span>Title</span><span>Reserved on</span><span>Status</span><span></span></div>
+  {% for r in reservations %}
+  <div class="ledger-row">
+    <span><a href="{{ url_for('book_detail', book_id=r.book_id) }}">{{ r.book.title }}</a></span>
+    <span class="due-tag ok">{{ r.reservation_date.strftime('%d %b %Y') }}</span>
+    {% if r.status == 'Notified' %}
+      <span class="status-pill available"><span class="status-dot available"></span>Ready for pickup</span>
+    {% else %}
+      <span class="due-tag ok">Waiting</span>
+    {% endif %}
+    <form class="inline-form" method="post" action="{{ url_for('cancel_reservation', res_id=r.id) }}">
+      <button class="tiny-btn danger" type="submit">Cancel</button>
+    </form>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-mini">No active reservations. Browse the catalog to reserve a checked-out title.</div>
+{% endif %}
+
+<div class="section-title"><h2>Past returns</h2><span>{{ history|length }} record{{ 's' if history|length != 1 else '' }}</span></div>
+{% if history %}
+<div class="ledger">
+  <div class="ledger-row head"><span>Title</span><span>Returned</span><span>Fine</span><span></span></div>
+  {% for t in history %}
+  <div class="ledger-row">
+    <span>{{ t.book.title }}</span>
+    <span class="due-tag ok">{{ t.return_date.strftime('%d %b %Y') }}</span>
+    <span class="due-tag {{ 'overdue' if t.fine else 'ok' }}">{{ 'Rs ' + t.fine|string if t.fine else 'None' }}</span>
+    <span></span>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-mini">No return history yet.</div>
+{% endif %}
+
+{% endblock %}

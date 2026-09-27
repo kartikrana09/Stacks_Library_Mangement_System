@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}{{ book.title }} — Stacks{% endblock %}
+{% block content %}
+
+<a href="{{ url_for('index') }}" class="btn-secondary btn" style="margin-bottom:28px;">← Back to catalog</a>
+
+<div class="detail-wrap">
+  <div class="spine">
+    <span class="spine-initial">{{ book.title[0] }}</span>
+  </div>
+
+  <div>
+    <span class="detail-eyebrow">{{ book.category }}</span>
+    <h1 class="detail-title">{{ book.title }}</h1>
+    <p class="detail-author">{{ book.author }}</p>
+
+    {% if book.available_copies > 0 %}
+      <span class="status-pill available"><span class="status-dot available"></span>Available now — {{ book.available_copies }} of {{ book.total_copies }} copies on shelf</span>
+    {% else %}
+      <span class="status-pill issued"><span class="status-dot"></span>All copies issued</span>
+      {% if queue_len > 0 %}<span class="stamp">{{ queue_len }} in queue</span>{% endif %}
+    {% endif %}
+
+    <div class="detail-facts">
+      <div><div class="fact-label">Publisher</div><div class="fact-value">{{ book.publisher or '—' }}</div></div>
+      <div><div class="fact-label">ISBN</div><div class="fact-value">{{ book.isbn or '—' }}</div></div>
+      <div><div class="fact-label">Total copies</div><div class="fact-value">{{ book.total_copies }}</div></div>
+      {% if book.price %}<div><div class="fact-label">Price</div><div class="fact-value">Rs {{ '%.2f'|format(book.price) }}</div></div>{% endif %}
+    </div>
+
+    <div class="action-row">
+      {% if not current_student %}
+        <a href="{{ url_for('login') }}" class="btn btn-primary">Sign in to reserve or issue</a>
+      {% elif book.available_copies > 0 %}
+        <span class="btn btn-secondary" style="cursor:default;">Head to the desk — this one's on the shelf</span>
+      {% elif already_reserved %}
+        <span class="btn btn-secondary" style="cursor:default;">You're on the waitlist for this title</span>
+      {% else %}
+        <form method="post" action="{{ url_for('reserve', book_id=book.id) }}">
+          <button class="btn btn-primary" type="submit">Reserve this title</button>
+        </form>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}

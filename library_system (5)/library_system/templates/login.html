@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Sign in — Stacks{% endblock %}
+{% block content %}
+<div class="form-card">
+  <h2>Welcome back</h2>
+  <p class="sub">Sign in with your roll number to reserve titles and track what's on your shelf.</p>
+  <form method="post">
+    <div class="field">
+      <label for="roll_no">Roll number</label>
+      <input type="text" id="roll_no" name="roll_no" placeholder="e.g. DEMO001" required autofocus>
+    </div>
+    <div class="field">
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" placeholder="••••••••" required>
+    </div>
+    <button class="btn btn-primary btn-block" type="submit">Sign in</button>
+  </form>
+  <p class="form-foot">New here? <a href="{{ url_for('register') }}">Get a library card</a></p>
+  <p class="form-foot" style="font-size:12.5px;">Demo account — roll <strong>DEMO001</strong>, password <strong>demo123</strong></p>
+</div>
+{% endblock %}

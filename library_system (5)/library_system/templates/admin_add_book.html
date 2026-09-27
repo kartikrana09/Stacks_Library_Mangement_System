@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Add a book — Stacks{% endblock %}
+{% block content %}
+<div class="form-card" style="max-width:520px;">
+  <h2>Add a book</h2>
+  <p class="sub">Add a new title to the catalog.</p>
+  <form method="post">
+    <div class="field">
+      <label for="title">Title</label>
+      <input type="text" id="title" name="title" required autofocus>
+    </div>
+    <div class="field">
+      <label for="author">Author</label>
+      <input type="text" id="author" name="author" required>
+    </div>
+    <div class="field">
+      <label for="isbn">ISBN</label>
+      <input type="text" id="isbn" name="isbn">
+    </div>
+    <div class="field">
+      <label for="publisher">Publisher</label>
+      <input type="text" id="publisher" name="publisher">
+    </div>
+    <div class="field">
+      <label for="category">Category</label>
+      <input type="text" id="category" name="category" placeholder="e.g. Computer Science">
+    </div>
+    <div class="field">
+      <label for="total_copies">Number of copies</label>
+      <input type="number" id="total_copies" name="total_copies" value="1" min="1" required>
+    </div>
+    <button class="btn btn-primary btn-block" type="submit">Add to catalog</button>
+  </form>
+</div>
+{% endblock %}

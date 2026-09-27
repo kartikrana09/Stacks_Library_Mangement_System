@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Librarian sign in — Stacks{% endblock %}
+{% block content %}
+<div class="form-card">
+  <h2>Librarian desk</h2>
+  <p class="sub">Sign in to issue, return, and manage the catalog.</p>
+  <form method="post">
+    <div class="field">
+      <label for="username">Username</label>
+      <input type="text" id="username" name="username" required autofocus>
+    </div>
+    <div class="field">
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" required>
+    </div>
+    <button class="btn btn-primary btn-block" type="submit">Sign in</button>
+  </form>
+  <p class="form-foot" style="font-size:12.5px;">Demo admin — username <strong>admin</strong>, password <strong>admin123</strong></p>
+</div>
+{% endblock %}

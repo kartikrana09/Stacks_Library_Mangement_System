@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Bulk upload — Stacks{% endblock %}
+{% block content %}
+<div class="form-card" style="max-width:560px;">
+  <h2>Bulk upload books</h2>
+  <p class="sub">Upload a CSV to add many books at once — useful when you get an export from the real library register instead of typing each title in by hand.</p>
+
+  <form method="post" enctype="multipart/form-data">
+    <div class="field">
+      <label for="csv_file">CSV file</label>
+      <input type="file" id="csv_file" name="csv_file" accept=".csv" required>
+    </div>
+    <button class="btn btn-primary btn-block" type="submit">Upload and import</button>
+  </form>
+
+  <div style="margin-top:28px; padding-top:22px; border-top:1px solid var(--line);">
+    <p class="fact-label" style="margin-bottom:8px;">Expected columns</p>
+    <p style="font-size:14px; color:var(--ink-soft); line-height:1.7;">
+      <code>title</code>, <code>author</code> — required<br>
+      <code>publisher</code>, <code>category</code>, <code>isbn</code>, <code>total_copies</code>, <code>price</code> — optional
+    </p>
+    <p style="font-size:13px; color:var(--ink-soft); margin-top:10px;">
+      Rows missing a title or author are skipped and reported after upload. Column names are matched case-insensitively.
+    </p>
+  </div>
+</div>
+{% endblock %}

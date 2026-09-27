@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Librarian desk — Stacks{% endblock %}
+{% block content %}
+
+<section class="hero">
+  <span class="hero-eyebrow">Librarian Desk</span>
+  <h1>Today at a glance</h1>
+</section>
+
+<div class="stat-row">
+  <div class="stat-card"><div class="stat-num" data-count="{{ total_books }}">0</div><div class="stat-label">Titles in catalog</div></div>
+  <div class="stat-card"><div class="stat-num" data-count="{{ total_copies }}">0</div><div class="stat-label">Total copies</div></div>
+  <div class="stat-card"><div class="stat-num" data-count="{{ issued_count }}">0</div><div class="stat-label">Currently issued</div></div>
+  <div class="stat-card {{ 'warn' if overdue }}"><div class="stat-num" data-count="{{ overdue|length }}">0</div><div class="stat-label">Overdue</div></div>
+  <div class="stat-card"><div class="stat-num" data-count="{{ pending_reservations }}">0</div><div class="stat-label">Pending reservations</div></div>
+</div>
+
+<div class="action-row" style="margin-top:8px;">
+  <a href="{{ url_for('admin_issue') }}" class="btn btn-primary">Issue a book</a>
+  <a href="{{ url_for('admin_books') }}" class="btn btn-secondary">Manage catalog</a>
+  <a href="{{ url_for('admin_transactions') }}" class="btn btn-secondary">Transactions</a>
+  <a href="{{ url_for('admin_reservations') }}" class="btn btn-secondary">Reservations</a>
+</div>
+
+<div class="section-title"><h2>Most borrowed</h2></div>
+{% if most_borrowed %}
+<div class="ledger">
+  {% for title, cnt in most_borrowed %}
+  <div class="ledger-row" style="grid-template-columns: 1fr 100px;">
+    <span>{{ title }}</span>
+    <span class="due-tag ok">{{ cnt }} time{{ 's' if cnt != 1 else '' }}</span>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-mini">No transactions yet.</div>
+{% endif %}
+
+{% if overdue %}
+<div class="section-title"><h2>Overdue right now</h2></div>
+<div class="ledger">
+  <div class="ledger-row head"><span>Title</span><span>Student</span><span>Due</span><span>Days late</span></div>
+  {% for t in overdue %}
+  <div class="ledger-row">
+    <span>{{ t.book.title }}</span>
+    <span>{{ t.student.name }}</span>
+    <span class="due-tag overdue">{{ t.due_date.strftime('%d %b %Y') }}</span>
+    <span class="due-tag overdue">{{ (today - t.due_date).days }} days</span>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+{% endblock %}
