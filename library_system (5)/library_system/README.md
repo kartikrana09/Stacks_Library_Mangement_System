@@ -10,6 +10,7 @@ titles**, not sample data.
 
 **Students**
 - Search the catalog by title, author, or ISBN; filter by category
+- A cinematic, skippable book introduction leads into the live catalog
 - See real-time availability for every title
 - Reserve a book that's currently issued — auto-notified when it's returned
   ("Ready for pickup" shows right on their dashboard)
@@ -65,7 +66,7 @@ library_system/
 ├── templates/            # Jinja2 templates
 └── static/
     ├── css/style.css     # Design system (see comments at top of file)
-    └── js/main.js        # Cursor-tilt cards, magnetic buttons, count-up stats
+    └── js/main.js        # Book-opening scroll progress, librarian navigation, count-up stats
 ```
 
 ## Database schema
