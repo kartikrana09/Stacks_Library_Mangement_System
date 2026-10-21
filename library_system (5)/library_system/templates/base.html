@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+{% set admin_area = session.get('admin_id') and request.endpoint and request.endpoint.startswith('admin_') %}
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{% block title %}Stacks — College Library{% endblock %}</title>
@@ -8,46 +9,82 @@
 <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Display&family=Spectral:ital,wght@0,400;0,500;0,600;1,500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
-<body>
+<body class="{{ 'admin-mode' if admin_area else '' }} {{ 'landing-page' if request.endpoint == 'index' else '' }}">
 <div class="grain"></div>
 
 <header class="site-header">
-  <a class="brand" href="{{ url_for('index') }}">
+  <a class="brand" href="{{ url_for('admin_dashboard') if admin_area else url_for('index') }}">
     <span class="brand-mark">St</span><span class="brand-word">acks</span>
   </a>
-  <nav class="site-nav">
-    <a href="{{ url_for('index') }}" class="{{ 'is-active' if request.endpoint == 'index' else '' }}">Catalog</a>
-    {% if current_student %}
-      <a href="{{ url_for('dashboard') }}" class="{{ 'is-active' if request.endpoint == 'dashboard' else '' }}">My shelf</a>
-      <a href="{{ url_for('logout') }}">Sign out</a>
-      <span class="nav-user">{{ current_student.name.split(' ')[0] }}</span>
-    {% else %}
-      <a href="{{ url_for('login') }}" class="{{ 'is-active' if request.endpoint == 'login' else '' }}">Sign in</a>
-      <a href="{{ url_for('register') }}" class="nav-cta">Get a card</a>
-    {% endif %}
-    <a href="{{ url_for('admin_dashboard') if session.get('admin_id') else url_for('admin_login') }}" class="nav-admin">Librarian</a>
-  </nav>
+  {% if admin_area %}
+    <div class="admin-topbar">
+      <button class="sidebar-toggle" type="button" aria-controls="admin-sidebar" aria-expanded="true">
+        <span aria-hidden="true">☰</span> <span class="toggle-label">Menu</span>
+      </button>
+      <span class="admin-topbar-label">Librarian workspace</span>
+      <a class="nav-admin" href="{{ url_for('admin_logout') }}">Sign out</a>
+    </div>
+  {% else %}
+    <nav class="site-nav" aria-label="Main navigation">
+      <a href="{{ url_for('index') }}" class="{{ 'is-active' if request.endpoint == 'index' else '' }}">Catalog</a>
+      {% if current_student %}
+        <a href="{{ url_for('dashboard') }}" class="{{ 'is-active' if request.endpoint == 'dashboard' else '' }}">My shelf</a>
+        <a href="{{ url_for('logout') }}">Sign out</a>
+        <span class="nav-user">{{ current_student.name.split(' ')[0] }}</span>
+      {% else %}
+        <a href="{{ url_for('login') }}" class="{{ 'is-active' if request.endpoint == 'login' else '' }}">Sign in</a>
+        <a href="{{ url_for('register') }}" class="nav-cta">Get a card</a>
+      {% endif %}
+      <a href="{{ url_for('admin_dashboard') if session.get('admin_id') else url_for('admin_login') }}" class="nav-admin">Librarian</a>
+    </nav>
+  {% endif %}
 </header>
 
+{% if admin_area %}
+<div class="admin-layout">
+  <aside class="admin-sidebar" id="admin-sidebar" aria-label="Librarian navigation">
+    <span class="sidebar-heading">Library operations</span>
+    <nav>
+      <a href="{{ url_for('admin_dashboard') }}" class="{{ 'is-active' if request.endpoint == 'admin_dashboard' else '' }}" {% if request.endpoint == 'admin_dashboard' %}aria-current="page"{% endif %}>
+        <span class="sidebar-icon" aria-hidden="true">01</span><span class="sidebar-label">Overview</span>
+      </a>
+      <a href="{{ url_for('admin_books') }}" class="{{ 'is-active' if request.endpoint == 'admin_books' else '' }}" {% if request.endpoint == 'admin_books' %}aria-current="page"{% endif %}>
+        <span class="sidebar-icon" aria-hidden="true">02</span><span class="sidebar-label">Book inventory</span>
+      </a>
+      <a href="{{ url_for('admin_add_book') }}" class="{{ 'is-active' if request.endpoint == 'admin_add_book' else '' }}" {% if request.endpoint == 'admin_add_book' %}aria-current="page"{% endif %}>
+        <span class="sidebar-icon" aria-hidden="true">03</span><span class="sidebar-label">Add a book</span>
+      </a>
+      <a href="{{ url_for('admin_issue') }}" class="{{ 'is-active' if request.endpoint == 'admin_issue' else '' }}" {% if request.endpoint == 'admin_issue' %}aria-current="page"{% endif %}>
+        <span class="sidebar-icon" aria-hidden="true">04</span><span class="sidebar-label">Issue a book</span>
+      </a>
+      <a href="{{ url_for('admin_transactions') }}" class="{{ 'is-active' if request.endpoint == 'admin_transactions' else '' }}" {% if request.endpoint == 'admin_transactions' %}aria-current="page"{% endif %}>
+        <span class="sidebar-icon" aria-hidden="true">05</span><span class="sidebar-label">Transactions</span>
+      </a>
+      <a href="{{ url_for('admin_reservations') }}" class="{{ 'is-active' if request.endpoint == 'admin_reservations' else '' }}" {% if request.endpoint == 'admin_reservations' %}aria-current="page"{% endif %}>
+        <span class="sidebar-icon" aria-hidden="true">06</span><span class="sidebar-label">Reservations</span>
+      </a>
+    </nav>
+    <a class="sidebar-catalog-link" href="{{ url_for('index') }}"><span class="sidebar-icon" aria-hidden="true">↗</span><span class="sidebar-label">Public catalog</span></a>
+  </aside>
+  <div class="admin-content-column">
+{% endif %}
 {% with messages = get_flashed_messages(with_categories=true) %}
   {% if messages %}
-    <div class="flash-stack">
+    <div class="flash-stack" role="status">
       {% for category, message in messages %}
-        <div class="flash flash-{{ category }}">
-          <span>{{ message }}</span>
-        </div>
+        <div class="flash flash-{{ category }}"><span>{{ message }}</span></div>
       {% endfor %}
     </div>
   {% endif %}
 {% endwith %}
-
-<main class="page">
-  {% block content %}{% endblock %}
-</main>
-
+<main class="page">{% block content %}{% endblock %}</main>
 <footer class="site-footer">
-  <span>Stacks — a card catalog for the campus library · DE &amp; VL mini project</span>
+  <span>{% if admin_area %}Stacks · Librarian workspace{% else %}Stacks · Smart Library Management System{% endif %}</span>
 </footer>
+{% if admin_area %}
+  </div>
+</div>
+{% endif %}
 
 <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
